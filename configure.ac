@@ -1,0 +1,121 @@
+##########################################################################
+# If not stated otherwise in this file or this component's Licenses.txt
+# file the following copyright and licenses apply:
+#
+# Copyright 2015 RDK Management
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+##########################################################################
+#                                              -*- Autoconf -*-
+# Process this file with autoconf to produce configure script.
+#
+
+AC_PREREQ([2.65])
+AC_INIT([CcspCr], [1.0], [BUG-REPORT-ADDRESS])
+AM_INIT_AUTOMAKE([subdir-objects])
+LT_INIT
+GTEST_ENABLE_FLAG = ""
+
+AC_ARG_ENABLE([gtestapp],
+             AS_HELP_STRING([--enable-gtestapp],[enable Gtest support (default is no)]),
+             [
+               case "${enableval}" in
+                yes) GTEST_SUPPORT_ENABLED=true
+                     GTEST_ENABLE_FLAG="-DGTEST_ENABLE"
+                     m4_if(m4_sysval,[0],[AC_CONFIG_FILES([source/test/Makefile])]);;
+                no) GTEST_SUPPORT_ENABLED=false AC_MSG_ERROR([Gtest support is disabled]);;
+                 *) AC_MSG_ERROR([bad value ${enableval} for --enable-gtestapp ]);;
+               esac
+             ],
+             [echo "Gtestapp is disabled"])
+AM_CONDITIONAL([WITH_GTEST_SUPPORT], [test x$GTEST_SUPPORT_ENABLED = xtrue])
+
+AC_PREFIX_DEFAULT(`pwd`)
+AC_ENABLE_SHARED
+AC_DISABLE_STATIC
+
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AM_PROG_CC_C_O
+AM_PROG_LIBTOOL(libtool)
+
+SYSTEMD_CFLAGS=" "
+SYSTEMD_LDFLAGS=" "
+
+#rbus
+AC_ARG_WITH([rbus-build],
+[AC_HELP_STRING([--with-rbus-build={none,only,integrated}],
+                [specify how to build an rbus enabled component])],
+[case x"$withval" in
+   xnone)
+     RBUS_BUILD=none
+     ;;
+   xonly)
+     RBUS_BUILD=only
+     ;;
+   xintegrated)
+     RBUS_BUILD=integrated
+     ;;
+   *)
+     AC_MSG_ERROR([$withval is an invalid option to --with-rbus-build])
+     ;;
+ esac],
+[RBUS_BUILD=integrated])
+if test x"${RBUS_BUILD}" != x; then
+  AC_DEFINE_UNQUOTED(RBUS_BUILD, "$RBUS_BUILD",
+                     [The rbus build type])
+fi
+AM_CONDITIONAL(RBUS_BUILD_NONE, test "x$RBUS_BUILD" = xnone)
+AM_CONDITIONAL(RBUS_BUILD_ONLY, test "x$RBUS_BUILD" = xonly)
+AM_CONDITIONAL(RBUS_BUILD_INTEGRATED, test "x$RBUS_BUILD" = xintegrated)
+#done rbus
+
+AC_ARG_ENABLE([notify],
+        AS_HELP_STRING([--enable-notify],[enable systemd notify]),
+        [
+          case "${enableval}" in
+           yes) SYSTEMD_CFLAGS="-DENABLE_SD_NOTIFY"
+                SYSTEMD_LDFLAGS="-lsystemd" ;;
+           no) AC_MSG_ERROR([systemd notify is disabled]) ;;
+          *) AC_MSG_ERROR([bad value ${enableval} for --enable-notify ]) ;;
+           esac
+           ],
+         [echo "systemd notify is disabled."])
+
+AC_SUBST(SYSTEMD_CFLAGS)
+AC_SUBST(SYSTEMD_LDFLAGS)
+
+# Checks for header files.
+AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+
+AC_CONFIG_FILES(
+	source/Makefile
+	Makefile
+)
+
+AC_SUBST(GTEST_ENABLE_FLAG)
+
+AC_OUTPUT
+
