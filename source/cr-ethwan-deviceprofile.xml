@@ -28,9 +28,11 @@
 	<component>
 		<name>com.cisco.spvtg.ccsp.psm</name> <version>1</version>
 	</component>
+<?ifndef NO_MTA_FEATURE_SUPPORT?>
 	<component>
 		<name>com.cisco.spvtg.ccsp.mta</name> <version>1</version>
 	</component>
+<?endif?>
 	<component>
 		<name>com.cisco.spvtg.ccsp.pam</name> <version>1</version>
 	</component>
