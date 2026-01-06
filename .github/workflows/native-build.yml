@@ -7,7 +7,7 @@ on:
     branches: [ main, 'sprint/**', 'release/**', topic/RDK*, develop ]
 
 jobs:
-  build-native-moca-agent:
+  build-native-component-registry:
     name: Build component-registry component in github rdkcentral
     runs-on: ubuntu-latest
     container:
