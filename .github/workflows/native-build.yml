@@ -7,7 +7,7 @@ on:
     branches: [ main, 'sprint/**', 'release/**', topic/RDK*, develop ]
 
 jobs:
-  build-native-component-registry:
+  build-component-registry-on-pr:
     name: Build component-registry component in github rdkcentral
     runs-on: ubuntu-latest
     container:
