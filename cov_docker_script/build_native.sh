@@ -134,23 +134,100 @@ process_native_headers() {
     return 0
 }
 
+# Parse configure options from external file
+parse_configure_options_file() {
+    local conf_file="$1"
+    local -n options_array=$2
+    
+    if [[ ! -f "$conf_file" ]]; then
+        err "Configure options file not found: $conf_file"
+        return 1
+    fi
+    
+    local current_section=""
+    local cppflags=""
+    local cflags=""
+    local ldflags=""
+    
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Skip empty lines and comments
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+        
+        # Detect section headers
+        if [[ "$line" =~ ^\[([A-Z_]+)\] ]]; then
+            current_section="${BASH_REMATCH[1]}"
+            continue
+        fi
+        
+        # Trim whitespace
+        line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        [[ -z "$line" ]] && continue
+        
+        # Append to appropriate section
+        case "$current_section" in
+            CPPFLAGS)
+                cppflags+="$line "
+                ;;
+            CFLAGS)
+                cflags+="$line "
+                ;;
+            LDFLAGS)
+                ldflags+="$line "
+                ;;
+        esac
+    done < "$conf_file"
+    
+    # Expand environment variables in the flags using envsubst or manual replacement
+    # Use manual replacement for better control and to avoid shell interpretation issues
+    cppflags="${cppflags//\$HOME/$HOME}"
+    cflags="${cflags//\$HOME/$HOME}"
+    ldflags="${ldflags//\$HOME/$HOME}"
+    
+    # Build final options array
+    [[ -n "$cppflags" ]] && options_array+=("CPPFLAGS=${cppflags% }")
+    [[ -n "$cflags" ]] && options_array+=("CFLAGS=${cflags% }")
+    [[ -n "$ldflags" ]] && options_array+=("LDFLAGS=${ldflags% }")
+}
+
 # Build with autotools
 build_component_autotools() {
     cd "$COMPONENT_DIR"
     
     # Read configure options as array
     local configure_options=()
-    local opt_count
-    opt_count=$(jq -r '.native_component.build.configure_options // [] | length' "$CONFIG_FILE")
     
-    local i=0
-    while [[ $i -lt $opt_count ]]; do
-        local option
-        option=$(jq -r ".native_component.build.configure_options[$i]" "$CONFIG_FILE")
-        option=$(expand_path "$option")
-        configure_options+=("$option")
-        i=$((i + 1))
-    done
+    # Check if using external configure options file
+    local config_file_path
+    config_file_path=$(jq -r '.native_component.build.configure_options_file // empty' "$CONFIG_FILE")
+    
+    if [[ -n "$config_file_path" ]]; then
+        # Using external configuration file
+        config_file_path=$(expand_path "$config_file_path")
+        # If relative path, make it relative to component dir
+        if [[ ! "$config_file_path" = /* ]]; then
+            config_file_path="$COMPONENT_DIR/$config_file_path"
+        fi
+        
+        step "Reading configure options from: $config_file_path"
+        if ! parse_configure_options_file "$config_file_path" configure_options; then
+            err "Failed to parse configure options file"
+            return 1
+        fi
+        ok "Loaded configure options from file"
+    else
+        # Using inline configure_options array (legacy support)
+        local opt_count
+        opt_count=$(jq -r '.native_component.build.configure_options // [] | length' "$CONFIG_FILE")
+        
+        local i=0
+        while [[ $i -lt $opt_count ]]; do
+            local option
+            option=$(jq -r ".native_component.build.configure_options[$i]" "$CONFIG_FILE")
+            option=$(expand_path "$option")
+            configure_options+=("$option")
+            i=$((i + 1))
+        done
+    fi
     
     # Run autogen if exists
     if [[ -f "./autogen.sh" ]]; then

@@ -83,10 +83,7 @@
     "lib_output_path": "$HOME/usr/local/lib/",
     "build": {
       "type": "autotools",
-      "configure_options": [
-        "CPPFLAGS=-I$HOME/usr/include/rdkb/ -I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include -I/usr/include/libxml2",
-        "LDFLAGS=-L$HOME/usr/local/lib/ -Wl,--allow-shlib-undefined -Wl,--unresolved-symbols=ignore-all"
-      ]
+      "configure_options_file": "cov_docker_script/configure_options.conf"
     }
   }
 }
