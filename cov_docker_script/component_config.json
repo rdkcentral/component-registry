@@ -9,7 +9,7 @@
       {
         "name": "common-library",
         "repo": "https://github.com/rdkcentral/common-library.git",
-        "branch": "feature/native_build_for_coverity",
+        "branch": "develop",
         "header_paths": [
           { "source": "source/ccsp/include", "destination": "$HOME/usr/include/rdkb" },
           { "source": "source/ccsp/components/include", "destination": "$HOME/usr/include/rdkb" },
@@ -44,7 +44,7 @@
       {
         "name": "Utopia",
         "repo": "https://github.com/rdkcentral/utopia.git",
-        "branch": "feature/cov_native_build",
+        "branch": "develop",
         "header_paths": [
           { "source": "source/include/sysevent", "destination": "$HOME/usr/include/rdkb/sysevent" },
           { "source": "source/include/syscfg", "destination": "$HOME/usr/include/rdkb/syscfg" },
