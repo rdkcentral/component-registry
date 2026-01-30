@@ -19,7 +19,7 @@
 if WITH_GTEST_SUPPORT
 SUBDIRS = test
 endif
-AM_CFLAGS += -Wno-format
+AM_CFLAGS =
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -306,7 +306,7 @@ static char *typeStr[] = {"string", "int", "unsignedInt", "boolean", "dateTime",
 
 static void WriteObjectStartToXml(FILE *file, char *paraName, int type)
 {
-    fprintf(file,"<parameter>\n<parameterName>%s</parameterName>\n%s",  paraName);
+    fprintf(file,"<parameter>\n<parameterName>%s</parameterName>\n",  paraName);
     fprintf(file, "<parameterType>object</parameterType>\n");
     fprintf(file, "<array>%s</array>\n<parameters>\n", typeStr[type]);
 }
