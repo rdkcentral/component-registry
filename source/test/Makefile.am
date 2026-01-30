@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-AM_CFLAGS =
+AM_CFLAGS += -Wno-format
 
 AM_CPPFLAGS = -Wall -g -Werror
 AM_CXXFLAGS = -std=c++11
