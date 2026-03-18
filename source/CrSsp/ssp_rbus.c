@@ -49,6 +49,12 @@
 #define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
 #define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE "cr-ethwan-deviceprofile.xml"
 #define CCSP_CR_DEVICE_PROFILE_XML_FILE "cr-deviceprofile.xml"
+#define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
+#if defined(_SCER11BEL_PRODUCT_REQ_)
+#define CCSP_USE_ETHWAN_PROFILE 1
+#else
+#define CCSP_USE_ETHWAN_PROFILE 0
+#endif
 
 #define ERROR_CHECK(CMD) \
 do \
@@ -325,7 +331,7 @@ static int crData_LoadRegistry(crData_t cr)
     xmlChar* name = NULL, * version = NULL, * Event = NULL, * dep = NULL;
     const char* fileName = NULL;
 
-    if(access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
+    if(CCSP_USE_ETHWAN_PROFILE || (access(CCSP_ETHWAN_ENABLE, F_OK) == 0))
         fileName = CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE;
     else
         fileName = CCSP_CR_DEVICE_PROFILE_XML_FILE;
