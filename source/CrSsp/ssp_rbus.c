@@ -49,7 +49,6 @@
 #define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
 #define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE "cr-ethwan-deviceprofile.xml"
 #define CCSP_CR_DEVICE_PROFILE_XML_FILE "cr-deviceprofile.xml"
-#define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
 #if defined(_SCER11BEL_PRODUCT_REQ_)
 #define CCSP_USE_ETHWAN_PROFILE 1
 #else
