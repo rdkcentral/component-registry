@@ -479,7 +479,7 @@ static int crData_ReadyCheck(crData_t cr)
 
 
 
-static void* pollingComponentReady(void* user)
+/*static void* pollingComponentReady(void* user)
 {
     int rc = 0;
     int i = 0, size = 0;
@@ -532,7 +532,7 @@ static void* pollingComponentReady(void* user)
     (void)rc;
     return NULL;
 }
-
+*/
 
 static int crData_RegisterComponent(crData_t cr, const char* componentName, int version)
 {
@@ -555,8 +555,8 @@ static int crData_RegisterComponent(crData_t cr, const char* componentName, int 
       
         if(!(reg->m_depData->monitorTID))
         {
-            ERROR_CHECK(pthread_create(&(reg->m_depData->monitorTID), NULL, &pollingComponentReady, reg));
-            ERROR_CHECK(pthread_detach(reg->m_depData->monitorTID));
+           // ERROR_CHECK(pthread_create(&(reg->m_depData->monitorTID), NULL, &pollingComponentReady, reg));
+           // ERROR_CHECK(pthread_detach(reg->m_depData->monitorTID));
         }
     }
     else
