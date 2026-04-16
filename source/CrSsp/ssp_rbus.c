@@ -392,10 +392,11 @@ static int crData_LoadRegistry(crData_t cr)
                                         haveDependency = true;
                                         Event = xmlNodeGetContent(field);
                                         pCompDep->eventname = strdup((const char*)Event);
-                                        rbusDataElement_t DataElements[1] = { \
+                                        /*rbusDataElement_t DataElements[1] = { \
                                             {(char*)Event, RBUS_ELEMENT_TYPE_EVENT, {eventGetHandler, NULL, NULL, NULL, subHandler, NULL}} \
                                         };
                                         rbus_regDataElements(g_hRbus, 1, DataElements);
+                                        */
                                     }
                                 }
                             }
