@@ -280,7 +280,7 @@ static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, 
     return RBUS_ERROR_SUCCESS;
 }
 
-static rbusError_t eventGetHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* opts)
+/* static rbusError_t eventGetHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* opts)
 {
     (void)handle;
     (void)opts;
@@ -315,7 +315,7 @@ static rbusError_t eventGetHandler(rbusHandle_t handle, rbusProperty_t property,
     rbusValue_Release(value);
 
     return RBUS_ERROR_SUCCESS;
-}
+}*/ 
 
 static int crData_LoadRegistry(crData_t cr)
 {
