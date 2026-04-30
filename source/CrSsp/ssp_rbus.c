@@ -95,7 +95,7 @@ int g_waitThreadStarted = 0;
 rbusDataElement_t crDataElements[CR_DATA_ELEMENTS_COUNT] = { \
     {"Device.CR.RegisterComponent()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, methodHandler}}, \
     {"Device.CR.IsComponentRegistered()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, isRegisteredHandler}}, \
-    {"Device.CR.SystemReady", RBUS_ELEMENT_TYPE_PROPERTY, {getHandler, NULL, NULL, NULL, subHandler, NULL}}, \
+   /* {"Device.CR.SystemReady", RBUS_ELEMENT_TYPE_PROPERTY, {getHandler, NULL, NULL, NULL, subHandler, NULL}}, */ \
     {"eRT.com.cisco.spvtg.ccsp.CR.GetHealth()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, methodHandler}} \
 };
 
@@ -268,18 +268,17 @@ static void publishReadyEvent(rbusHandle_t g_hRbus, const char* eventName)
     }
 }
 
-static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, const char* eventName, rbusFilter_t filter, int32_t interval, bool* autoPublish)
+/*static rbusError_t subHandler(rbusHandle_t handle, rbusEventSubAction_t action, const char* eventName, rbusFilter_t filter, int32_t interval, bool* autoPublish)
 {
     (void)handle;
     (void)action;
     (void)filter;
     (void)interval;
     printf("subHandler %s called", eventName);
-    /*disable expensive autopublish because we can easily publish SystemReady value change on our own*/
+    
     *autoPublish = false;
     return RBUS_ERROR_SUCCESS;
-}
-
+}*/
 /* static rbusError_t eventGetHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* opts)
 {
     (void)handle;
@@ -682,7 +681,7 @@ static rbusError_t methodHandler(rbusHandle_t handle, char const* methodName, rb
     return RBUS_ERROR_ELEMENT_DOES_NOT_EXIST;
 }
 
-static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* options)
+/*static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* options)
 {
     char const* name = rbusProperty_GetName(property);
     rbusValue_t value;
@@ -701,7 +700,7 @@ static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbus
     }
     return RBUS_ERROR_ELEMENT_DOES_NOT_EXIST;
 }
-
+*/
 static void* waitForSystemReady(void* user)
 {
     int rc = 0;
