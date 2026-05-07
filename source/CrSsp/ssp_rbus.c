@@ -90,7 +90,7 @@ rbusHandle_t g_hRbus = NULL;
 pthread_t g_waitThread;
 int g_waitThreadStarted = 0;
 
-#define CR_DATA_ELEMENTS_COUNT 4
+#define CR_DATA_ELEMENTS_COUNT 3
 #define CR_DATA_ELEMENTS \
 rbusDataElement_t crDataElements[CR_DATA_ELEMENTS_COUNT] = { \
     {"Device.CR.RegisterComponent()", RBUS_ELEMENT_TYPE_METHOD, {NULL, NULL, NULL, NULL, NULL, methodHandler}}, \
