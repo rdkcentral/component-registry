@@ -98,6 +98,11 @@
 #define CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILE      CCSP_CR_DEVICE_PROFILE_XML_LOCATION CCSP_CR_ETHWAN_DEVICE_PROFILE_XML_FILENAME
 
 #define CCSP_ETHWAN_ENABLE "/nvram/ETHWAN_ENABLE"
+#if defined(_SCER11BEL_PRODUCT_REQ_)
+#define CCSP_USE_ETHWAN_PROFILE 1
+#else
+#define CCSP_USE_ETHWAN_PROFILE 0
+#endif
 
 /**********************************************************************
 
@@ -140,7 +145,7 @@ CcspCrLoadDeviceProfile
     PCCSP_COMPONENT_INFO            pCompInfo          = (PCCSP_COMPONENT_INFO)NULL;
 
     /* load from the file */
-    if (access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
+    if (CCSP_USE_ETHWAN_PROFILE || access(CCSP_ETHWAN_ENABLE, F_OK) == 0)
     {
         pFileHandle = AnscOpenFile
         (
