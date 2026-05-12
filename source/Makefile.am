@@ -23,7 +23,7 @@ AM_CFLAGS =
 
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = CcspCrSsp
+# bin_PROGRAMS = CcspCrSsp
 
 CcspCrSsp_CFLAGS = $(SYSTEMD_CFLAGS)
 CcspCrSsp_LDFLAGS = -lpthread
