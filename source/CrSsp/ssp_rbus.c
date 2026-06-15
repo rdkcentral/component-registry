@@ -706,6 +706,29 @@ static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbus
     return RBUS_ERROR_ELEMENT_DOES_NOT_EXIST;
 }
 
+#ifdef CORD_ENABLED
+/* In CORD builds PSM does not initialise the CCSP message bus and therefore
+ * never calls Device.CR.RegisterComponent() itself.  Instead, PSM signals
+ * completion by creating /tmp/psm_initialized.  This thread polls for that
+ * sentinel file and, once found, calls crData_RegisterComponent() on PSM's
+ * behalf so that CR can fire wan_ready_to_go as soon as PSM is ready. */
+#define PSM_INITIALIZED_FILE "/tmp/psm_initialized"
+#define PSM_COMPONENT_NAME   "com.cisco.spvtg.ccsp.psm"
+
+static void* waitForPsmInitialized(void* user)
+{
+    (void)user;
+    CRLOG_WARN("CORD: waiting for PSM initialization (%s)", PSM_INITIALIZED_FILE);
+    while(access(PSM_INITIALIZED_FILE, F_OK) != 0)
+    {
+        sleep(1);
+    }
+    CRLOG_WARN("CORD: PSM initialized, auto-registering %s with CR", PSM_COMPONENT_NAME);
+    crData_RegisterComponent(g_crData, PSM_COMPONENT_NAME, 1);
+    return NULL;
+}
+#endif /* CORD_ENABLED */
+
 static void* waitForSystemReady(void* user)
 {
     int rc = 0;
@@ -822,6 +845,14 @@ int CRRbusOpen()
 
     /*register self before starting wait thread, just in case CR is the only component in xml list*/
     crData_RegisterComponent(g_crData, CR_COMPONENT_ID, 1);
+
+#ifdef CORD_ENABLED
+    {
+        pthread_t psmInitThread;
+        ERROR_CHECK(pthread_create(&psmInitThread, NULL, &waitForPsmInitialized, NULL));
+        ERROR_CHECK(pthread_detach(psmInitThread));
+    }
+#endif
 
     ERROR_CHECK(pthread_create(&g_waitThread, NULL, &waitForSystemReady, g_crData));
     if(rc == 0)

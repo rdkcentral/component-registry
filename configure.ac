@@ -100,6 +100,19 @@ AC_ARG_ENABLE([notify],
 AC_SUBST(SYSTEMD_CFLAGS)
 AC_SUBST(SYSTEMD_LDFLAGS)
 
+AC_ARG_ENABLE([cord],
+        AS_HELP_STRING([--enable-cord],[enable CORD persistent storage backend]),
+        [
+          case "${enableval}" in
+           yes) CORD_CFLAGS="-DCORD_ENABLED" ;;
+           no)  echo "CORD support is disabled." ;;
+          *) AC_MSG_ERROR([bad value ${enableval} for --enable-cord]) ;;
+           esac
+           ],
+         [echo "CORD support is disabled."])
+
+AC_SUBST(CORD_CFLAGS)
+
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
