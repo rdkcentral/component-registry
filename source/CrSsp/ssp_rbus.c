@@ -714,6 +714,18 @@ static rbusError_t getHandler(rbusHandle_t handle, rbusProperty_t property, rbus
  * behalf so that CR can fire wan_ready_to_go as soon as PSM is ready. */
 #define PSM_INITIALIZED_FILE "/tmp/psm_initialized"
 #define PSM_COMPONENT_NAME   "com.cisco.spvtg.ccsp.psm"
+#define PSM_HEALTH_PROPERTY  "com.cisco.spvtg.ccsp.psm.Health"
+
+static rbusError_t psmHealthGetHandler(rbusHandle_t handle, rbusProperty_t property, rbusGetHandlerOptions_t* opts)
+{
+    (void)handle; (void)opts;
+    rbusValue_t value;
+    rbusValue_Init(&value);
+    rbusValue_SetString(value, access(PSM_INITIALIZED_FILE, F_OK) == 0 ? "Green" : "Red");
+    rbusProperty_SetValue(property, value);
+    rbusValue_Release(value);
+    return RBUS_ERROR_SUCCESS;
+}
 
 static void* waitForPsmInitialized(void* user)
 {
@@ -848,6 +860,17 @@ int CRRbusOpen()
 
 #ifdef CORD_ENABLED
     {
+        /* Register PSM Health property so dmcli eRT getv com.cisco.spvtg.ccsp.psm.Health
+         * works in CORD builds where PSM has no rbus presence of its own. */
+        rbusDataElement_t psmHealthElem[] = {
+            {PSM_HEALTH_PROPERTY, RBUS_ELEMENT_TYPE_PROPERTY, {psmHealthGetHandler, NULL, NULL, NULL, NULL, NULL}}
+        };
+        rc = rbus_regDataElements(g_hRbus, 1, psmHealthElem);
+        if (rc != RBUS_ERROR_SUCCESS)
+            CRLOG_ERROR("CORD: failed to register %s: %d", PSM_HEALTH_PROPERTY, rc);
+        else
+            CRLOG_WARN("CORD: registered %s proxy property", PSM_HEALTH_PROPERTY);
+
         pthread_t psmInitThread;
         ERROR_CHECK(pthread_create(&psmInitThread, NULL, &waitForPsmInitialized, NULL));
         ERROR_CHECK(pthread_detach(psmInitThread));
