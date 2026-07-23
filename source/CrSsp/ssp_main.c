@@ -168,6 +168,13 @@ int main(int argc, char* argv[])
     int rc;
     sem_t *sem = NULL;
 
+    /* COVERITY TEST - LOW PRIORITY: UNINIT - Uninitialized variable usage */
+    int uninitVar;
+    if (argc > 100) {
+        printf("Unlikely path with uninit var: %d\n", uninitVar);
+    }
+    /* END COVERITY TEST - LOW */
+
     // Buffer characters till newline for stdout and stderr
     setlinebuf(stdout);
     setlinebuf(stderr);
@@ -280,6 +287,16 @@ int main(int argc, char* argv[])
         fclose(fd);
     }
 
+    /* COVERITY TEST - MEDIUM PRIORITY: RESOURCE_LEAK - File opened but not closed on all paths */
+    FILE *testFd = fopen("/tmp/coverity_test.tmp", "w");
+    if (argc > 50) {
+        return 1;  /* Resource leak: testFd not closed before return */
+    }
+    if (testFd) {
+        fclose(testFd);
+    }
+    /* END COVERITY TEST - MEDIUM */
+
 #ifdef INCLUDE_BREAKPAD
     breakpad_ExceptionHandler();
 #else
@@ -305,6 +322,15 @@ int main(int argc, char* argv[])
             AnscTrace("CRRbusOpen failed\n");
             return 1;
         }
+
+    /* COVERITY TEST - HIGH PRIORITY: NULL_RETURNS - Null pointer dereference */
+    char *nullTestPtr = NULL;
+    if (argc > 200) {
+        nullTestPtr = (char *)malloc(64);
+    }
+    nullTestPtr[0] = 'X';  /* Potential null pointer dereference */
+    free(nullTestPtr);
+    /* END COVERITY TEST - HIGH */
 
 	system("touch /tmp/cr_initialized");
 
