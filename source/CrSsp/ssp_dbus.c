@@ -618,7 +618,7 @@ void InitDbus()
     }
     else
     {
-        AnscCopyString(CrName, g_pCcspCrMgr->pCRName);
+            _ansc_sprintf(CrName, "%.*s", (int)(sizeof(CrName) - 1), g_pCcspCrMgr->pCRName);
     }
 
     /* CID 71933 - Unchecked return value */
