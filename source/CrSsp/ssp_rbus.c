@@ -178,14 +178,18 @@ static int crData_Create(crData_t* cr)
 bool isCompNameRegistered(const char* componentName)
 {
     ComponentRegistration_t* reg = rtVector_Find(g_crData->registry, componentName, componentRegistrationCompare);
-    if(reg && reg->registered)
+        if(reg)
     {
-        CRLOG_WARN("Component Name: %s found in registry", componentName);
-        return true;
+            pthread_mutex_lock(&g_crData->readyMutex);
+            int registered = reg->registered;
+            pthread_mutex_unlock(&g_crData->readyMutex);
+            if(registered)
+            {
+                CRLOG_WARN("Component Name: %s found in registry", componentName);
+                return true;
+            }
     }
-    else
         return false;
-
 }
 
 static rbusError_t isRegisteredHandler(rbusHandle_t handle, char const* methodName, rbusObject_t inParams, rbusObject_t outParams, rbusMethodAsyncHandle_t asyncHandle)
