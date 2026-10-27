@@ -153,7 +153,7 @@ void CRFreeComponent(name_spaceType_t***   component, ULONG  count)
 void CRRegisterTest()
 {
      name_spaceType_t**           ppSpaceType       = NULL;
-     ULONG                        uCount            = rand() % 16 + 10;
+     ULONG                        uCount            = 16;
      ULONG                        i                 = 0;            
      char                         buffer[256]       = { 0 };
      int                          iStatus           = 0;
@@ -185,7 +185,7 @@ void CRRegisterTest()
         }
 
         ppSpaceType[i]->name_space = AnscCloneString(buffer);
-        ppSpaceType[i]->dataType   = rand() % 9;
+        ppSpaceType[i]->dataType   = i % 9;
      }
 
      AnscTrace("Register a component with an unknown object...\n");
@@ -244,7 +244,7 @@ void CRRegisterTest()
         }
 
         ppSpaceType[i]->name_space = AnscCloneString(buffer);
-        ppSpaceType[i]->dataType   = rand() % 9;
+        ppSpaceType[i]->dataType   = i % 9;
      }
 
      AnscTrace("Register component 'CCSP_ObjectSample'...\n");
@@ -283,7 +283,7 @@ void CRRegisterTest()
         {
             sprintf(buffer, "Device.DevInfo.DevXXX.DevTable.{i}.param%lu", i + 1);
             ppSpaceType[i]->name_space = AnscCloneString(buffer);
-            ppSpaceType[i]->dataType   = rand() % 9;
+            ppSpaceType[i]->dataType   = i % 9;
         }
      }
 
@@ -710,7 +710,7 @@ void CRUnregisterTest()
 {
      int                          iStatus            = 0;
      name_spaceType_t**           ppSpaceType       = NULL;
-     ULONG                        uCount            = rand() % 16 + 10;
+     ULONG                        uCount            = 16;
      ULONG                        i                 = 0;            
      char                         buffer[256]       = { 0 };
 
@@ -761,7 +761,7 @@ void CRUnregisterTest()
         sprintf(buffer, "Device.DevInfo.param%lu", i + 1);
 
         ppSpaceType[i]->name_space = AnscCloneString(buffer);
-        ppSpaceType[i]->dataType   = rand() % 9;
+        ppSpaceType[i]->dataType   = i % 9;
      }
 
      AnscTrace("Register a component with correct version...\n");
