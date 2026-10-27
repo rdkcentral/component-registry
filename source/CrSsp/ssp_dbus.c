@@ -41,6 +41,7 @@
 #endif
 
 #include <sys/types.h>
+#include <stdio.h>
 #include <sys/ipc.h>
 
 #include "ssp_global.h"
@@ -606,20 +607,19 @@ void InitDbus()
 
     CCSP_Base_Func_CB               cb;
     char                            CrName[256];
+    int                             nameLength          = 0;
     ANSC_STATUS                     returnStatus       = ANSC_STATUS_SUCCESS;
 
     pComponentName = g_pCcspCrMgr->pCRName;
 
-    g_pCcspCrMgr->SetPrefix(g_pCcspCrMgr, g_Subsystem);
+    nameLength = snprintf(CrName, sizeof(CrName), "%s%s", g_Subsystem, g_pCcspCrMgr->pCRName);
+    if (nameLength < 0 || (size_t)nameLength >= sizeof(CrName))
+    {
+        CcspTraceInfo((" !!! CR component name is too long !!!\n"));
+        return;
+    }
 
-    if ( g_Subsystem[0] != 0 )
-    {
-        _ansc_sprintf(CrName, "%s%s", g_Subsystem, g_pCcspCrMgr->pCRName);
-    }
-    else
-    {
-        AnscCopyString(CrName, g_pCcspCrMgr->pCRName);
-    }
+    g_pCcspCrMgr->SetPrefix(g_pCcspCrMgr, g_Subsystem);
 
     /* CID 71933 - Unchecked return value */
     returnStatus = CCSP_Message_Bus_Init(CrName, CCSP_MSG_BUS_CFG, &g_pDbusHandle, (CCSP_MESSAGE_BUS_MALLOC)Ansc_AllocateMemory_Callback, Ansc_FreeMemory_Callback);

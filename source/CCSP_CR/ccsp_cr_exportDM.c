@@ -163,13 +163,26 @@ static STR_LIST  *split_string(char *dataModel)
     STR_LIST *pStrHead = NULL;
     STR_LIST *pNode   = NULL;
     STR_LIST *pTail   = NULL;
+    size_t tokenLength = 0;
     
     char *token  = strtok(dataModel, ".");
     while(token)
     {
         /*fix me , use ansc *** instead malloc*/
         pNode = (STR_LIST *)AnscAllocateMemory(sizeof(STR_LIST));
-        strcpy(pNode->str, token);
+        if(!pNode)
+        {
+            freeList(pStrHead);
+            return NULL;
+        }
+        tokenLength = strlen(token);
+        if(tokenLength >= sizeof(pNode->str))
+        {
+            AnscFreeMemory(pNode);
+            freeList(pStrHead);
+            return NULL;
+        }
+        memcpy(pNode->str, token, tokenLength + 1);
         pNode->next = NULL;
         if(pStrHead == NULL)
         {
